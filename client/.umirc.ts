@@ -10,6 +10,9 @@ export default defineConfig({
   autoprefixer:{
     flexbox:'no-2009'
   },
+  dynamicImport: {
+    loading: '@/component/loading/index'
+  },
   extraPostCSSPlugins: [
     pxToVwPlugin({
       viewportWidth: 375,

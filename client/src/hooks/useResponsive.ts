@@ -7,7 +7,7 @@ interface ResponsiveConfig {
 interface ResponsiveInfo {
   [key: string]: boolean;
 }
-const responsiveConfig: ResponsiveConfig = {
+let responsiveConfig: ResponsiveConfig = {
   xs: 0,
   sm: 576,
   md: 768,
@@ -33,6 +33,14 @@ function calculate() {
     info = newInfo
   }
 }
+
+export function setResponsiveConfig(config: ResponsiveConfig) {
+  responsiveConfig = config;
+  if (info) {
+    calculate();
+  }
+}
+
 
 export default function useResponsive() {
   info = {};

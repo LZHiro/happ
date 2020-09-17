@@ -1,49 +1,83 @@
 'use strict';
 
 const { Service } = require('egg');
-const cheerio = require('cheerio');
+const fs = require('fs');
+const path = require('path');
+
+const options = {
+  dataType: 'text',
+  timeout: 300000,
+  headers: {
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36',
+    host: 'github.com',
+  },
+};
 
 class GithubService extends Service {
   async trending() {
     const { ctx } = this;
-    const trendingData = [];
+    const { logger } = ctx;
     try {
-      const { data } = await ctx.curl('https://github.com/trending', {
-        dataType: 'text',
-        timeout: 30000,
-        headers: {
-          'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36',
-          host: 'github.com',
-        },
+      const data = fs.readFileSync(path.join(__dirname, '../public/cache/github_trending.json'), {
+        encoding: 'utf8',
       });
-      if (data) {
-        const Q = cheerio.load(data);
-        Q('.Box-row').each(function(index) {
-          trendingData[index] = {};
-          trendingData[index].link = `https://github.com${Q(this).find('.h3.lh-condensed a').attr('href')}`;
-          trendingData[index].language = Q(this).find('[itemprop=programmingLanguage]').text();
-          // trendingData[index].language_color = Q(this).find('.repo-language-color').css('background-color');
-          Q(this).find('.h3.lh-condensed').text()
-            .replace(/([^\s]+)\s+\/\s+([^\s]+)/g, (m, author, project) => {
-              trendingData[index].author = author;
-              trendingData[index].project = project;
-            });
-          Q(this).find('.muted-link').text()
-            .replace(/([^\s]+)\s+([^\s]+)/g, (m, stars, branch) => {
-              trendingData[index].stars = stars;
-              trendingData[index].branch = branch;
-            });
-          trendingData[index].description = Q(this).find('p.col-9.text-gray').text()
-            .trim();
-          trendingData[index].star_today = Q(this).find('.float-sm-right').text()
-            .trim();
-        });
-        console.log(trendingData);
-      }
-
-      return trendingData;
+      return JSON.parse(data);
     } catch (err) {
-      return trendingData;
+      logger.error(err);
+    }
+  }
+  async language() {
+    const { ctx } = this;
+    const { logger, query, params } = ctx;
+
+    function getDate(since) {
+      switch (since) {
+        case 'daily':
+          return 'today';
+        case 'weekly':
+          return 'week';
+        case 'monthly':
+          return 'month';
+        default:
+          return 'today';
+      }
+    }
+    try {
+      const { language } = params;
+      const since = query.since || 'daily';
+      const key = getDate(since);
+      const cachePath = path.join(__dirname, `../public/cache/${language}_trending.json`);
+      let result = {};
+      if (language) {
+        if (fs.existsSync(cachePath)) {
+          const data = fs.readFileSync(cachePath, {
+            encoding: 'utf8',
+          });
+          result = JSON.parse(data);
+          if (result[key].length) {
+            return result;
+          }
+        }
+
+        const { data } = await ctx.curl(`https://github.com/trending/${language}?since=${since}`, options);
+        if (!data.includes('It looks like we don’t have any trending repositories for your choices.')) {
+          const trending = {
+            today: [],
+            week: [],
+            month: [],
+            ...result,
+          };
+          ctx.helper.insertDataFromHtml(data, key, trending);
+          fs.writeFile(cachePath, JSON.stringify(trending), err => {
+            if (!err) {
+              logger.debug(`write ${language}_trending success`);
+            }
+          });
+          return trending;
+        }
+      }
+    } catch (err) {
+      logger.error(err);
     }
   }
 }

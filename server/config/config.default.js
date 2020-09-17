@@ -16,7 +16,7 @@ module.exports = appInfo => {
   config.keys = appInfo.name + '_1598314072354_926';
 
   // add your middleware config here
-  config.middleware = [];
+  config.middleware = [ 'cors' ];
 
   config.io = {
     init: {},
@@ -30,13 +30,7 @@ module.exports = appInfo => {
       host: '127.0.0.1',
       port: 6379,
       db: 0,
-    },
-    mongoose: {
-      url: process.env.EGG_MONGODB_URL || 'mongodb://127.0.0.1/happ',
-      options: {
-        poolSize: 40,
-      },
-    },
+    }
   };
 
 

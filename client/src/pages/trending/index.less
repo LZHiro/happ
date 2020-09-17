@@ -1,6 +1,6 @@
 .trending {
   background-color: white;
-
+  min-height: 100%;
   header {
     display: flex;
     padding: 15px;
@@ -24,6 +24,21 @@
         height: 32px;
         font-size: 32px;
         color: white;
+      }
+    }
+  }
+  .headerPanel{
+    background:#24292e;
+    padding: 0 15px 15px 15px;
+    .search {
+      background-color:#3F4448;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      color: white;
+      &::placeholder {
+        color:#CFD0D1;
+        font-size: 13px;
       }
     }
   }
@@ -125,61 +140,97 @@
           }
         }
       }
-    }
-    
-    .modalList {
-      
+
+      li+li {
+        border-top: 1px solid silver;
+      }
     }
 
-    
+    .modalList {}
+
+
   }
 
 }
 
-:global {
-  .ant-list-header {
-    padding: 0 24px;
-    padding-bottom: 16px;
-    input {
-      border-radius: 6px;
-    }
-  }
-  .ant-modal {
-    height: 100%;
-    width: 80%;
-  }
-  .ant-modal-content {
-    height: 80%;
-    border-radius: 6px;
-    overflow: hidden;
-    box-shadow: 0 8px 24px rgba(149,157,165,.2);
-  }
 
-  .ant-modal-body {
-    height: calc(100% - 63px);
-    padding:24px 0 !important;
-  }
-  .ant-list-split {
-    height: 100%;
-  }
-  .ant-spin-nested-loading {
-    height: calc(100% - 48px);
-  }
-  .ant-spin-container {
-    height: 100%;
-  }
-  .ant-list-items {
-    height: 100%;
-    overflow: auto;
-  }
+
+:global {
   .ant-list-item {
     padding: 16px 24px;
     padding-left: 40px;
     color: #586069;
     font-size: 12px;
-    &:hover {
-      color: white;
-      background-color: #0366d6;
+  }
+}
+
+.languageModal {
+  height: 80%;
+  width: 90%;
+  :global {
+    .ant-list-header {
+      padding: 0 24px;
+      padding-bottom: 16px;
+
+      input {
+        border-radius: 6px;
+      }
     }
+
+    .am-modal-content {
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(149, 157, 165, .2);
+    }
+
+    .am-modal-body {
+      height: calc(100% - 43px);
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+
+    .ant-list-split {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .ant-spin-nested-loading {
+      height: calc(100% - 48px);
+    }
+
+    .ant-spin-container {
+      height: 100%;
+      overflow: auto;
+    }
+    .ant-list-item {
+      text-align: left;
+    }
+  }
+}
+
+.dateModal {
+  :global {
+    .am-modal-body {
+      padding: 0 0 !important;
+    }
+    .am-modal-content {
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .ant-list-item {
+      text-align: left;
+    }
+  }
+}
+.active {
+  font-weight: 600;
+  font-size: 14px;
+  position: relative;
+  span{
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    line-height: 55px;
   }
 }

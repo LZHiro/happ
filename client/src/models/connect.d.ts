@@ -1,4 +1,5 @@
 import { GlobalState } from './global';
+import { TrendingStateType } from '@/pages/trending/models/index';
 
 export interface Loading {
   global: boolean;
@@ -7,11 +8,14 @@ export interface Loading {
   };
   models: {
     global?: boolean;
+    trending?: boolean;
   }
 }
 
 export interface ConnectState {
-  global: GlobalState
+  global: GlobalState;
+  trending: TrendingStateType;
+  loading: Loading
 }
 
 export { GlobalState };
