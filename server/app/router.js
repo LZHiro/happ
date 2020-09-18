@@ -8,6 +8,7 @@ module.exports = async app => {
   router.get('/', controller.home.index);
   router.get('/trending', controller.github.index);
   router.get('/trending/:language', controller.github.language);
+  router.get('/weibo', app.controller.weibo.index);
   io.of('/').route('exchange', io.controller.nsp.exchange);
   io.of('/').route('join', io.controller.nsp.join);
   io.of('/').route('leaved', io.controller.nsp.leave);

@@ -1,7 +1,6 @@
 'use strict';
 
 const Controller = require('egg').Controller;
-const delay = time => new Promise(resolve => setTimeout(resolve, time));
 
 class GithubController extends Controller {
   async index() {

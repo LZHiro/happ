@@ -14,11 +14,11 @@ export default () => {
   }];
 
   function toDetail() {
-    history.push('/sina/123123');
+    history.push('/weibo/123123');
   }
 
   return (
-    <div className={styles.sina}>
+    <div className={styles.weibo}>
         <header>
           <h3>微博热搜</h3>
         </header>

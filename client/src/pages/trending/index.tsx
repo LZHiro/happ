@@ -138,6 +138,11 @@ const Trending: React.FC<TrendingProps> = (props) => {
   }, 300)
 
   function TrendingList() {
+    if(props.loading) {
+      return (
+        <Loading />
+      )
+    }
     if(props.data[language]) {
       const list = props.data[language][dates[dateIndex] as DateParamType];
       const items = list.map((item, index) => (
@@ -175,9 +180,7 @@ const Trending: React.FC<TrendingProps> = (props) => {
           </div>
         </li>
       ));
-      return props.loading ? (
-        <Loading />
-      ) : (
+      return (
         <QueueAnim
           type={['right', 'left']}
         >
@@ -189,9 +192,7 @@ const Trending: React.FC<TrendingProps> = (props) => {
         </QueueAnim>
       )
     }
-    return props.loading ? (
-      <Loading />
-    ) : null;
+    return null;
   }
 
   function handleSearch({search}:any) {
