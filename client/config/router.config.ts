@@ -12,8 +12,7 @@ const routes =  [
     { exact: true, path: '/basic/music', component: '@/pages/music/index', icon: '#iconmusic', title: 'Music'},
     { exact: true, path: '/basic/setting', component: '@/pages/setting/index', icon: '#iconset-color', title: 'Setting'},
   ]},
-  {exact: true, path: '/weibo/:id', component: '@/pages/weibo/detail'}
-]
+];
 
 export interface RouteItem {
   authority?: string[] | string;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './index.less';
 import { MenuOutlined, GithubFilled, StarOutlined, BranchesOutlined, CheckOutlined } from '@ant-design/icons';
 import { Radio, Input, List, Spin, Form } from 'antd';
@@ -8,7 +8,6 @@ import { ConnectState } from '@/models/connect';
 import QueueAnim from 'rc-queue-anim';
 import debounce from 'lodash.debounce';
 import Loading from '@/component/loading';
-import useResponsive, { setResponsiveConfig } from '@/hooks/useResponsive';
 
 const options = [
   { label: 'Repositories', value: 'repositories' },
@@ -31,9 +30,6 @@ interface TrendingProps extends TrendingStateType {
   dispatch: Dispatch;
   loading?: boolean;
 } 
-setResponsiveConfig({
-  isPc: 1200,
-});
 
 const Trending: React.FC<TrendingProps> = (props) => {
   const [ language, setLanguage ] = useState('Any');
@@ -52,9 +48,6 @@ const Trending: React.FC<TrendingProps> = (props) => {
       });
     }
   }, []);
-
-  const isPc = useResponsive();
-  console.log(isPc)
 
   const [ languageModal, setLanguageModal ] = useState(false);
   const [ dateModal, setDateModal ] = useState(false);
@@ -145,51 +138,56 @@ const Trending: React.FC<TrendingProps> = (props) => {
     }
     if(props.data[language]) {
       const list = props.data[language][dates[dateIndex] as DateParamType];
-      const items = list.map((item, index) => (
-        <li onClick={() => location.assign(item.link)} key={index + item.project}>
-          <h3>
-            <svg color="gray" height="16" viewBox="0 0 16 16" version="1.1" width="16" aria-hidden="true">
-              <path fillRule="evenodd" d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z">
-              </path>
-            </svg>
-            <a>
-              <span>{item.author} / </span>
-              {item.project}
-            </a>
-          </h3>
-          <p>{item.description}</p>
-          <div className={styles.info}>
-            {item.language && (
-              <div className={styles.type}>
-                <span className={styles.cycle}></span>
-                <span>{item.language}</span>
+      if (list.length) {
+        const items = list.map((item, index) => (
+          <li onClick={() => location.assign(item.link)} key={index + item.project}>
+            <h3>
+              <svg color="gray" height="16" viewBox="0 0 16 16" version="1.1" width="16" aria-hidden="true">
+                <path fillRule="evenodd" d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z">
+                </path>
+              </svg>
+              <a>
+                <span>{item.author} / </span>
+                {item.project}
+              </a>
+            </h3>
+            <p>{item.description}</p>
+            <div className={styles.info}>
+              {item.language && (
+                <div className={styles.type}>
+                  <span className={styles.cycle}></span>
+                  <span>{item.language}</span>
+                </div>
+              )}
+              <div className={styles.star}>
+                <StarOutlined />
+                <span>{item.stars}</span>
               </div>
-            )}
-            <div className={styles.star}>
-              <StarOutlined />
-              <span>{item.stars}</span>
+              <div className={styles.branch}>
+                <BranchesOutlined />
+                <span>{item.branch}</span>
+              </div>
+              <div className={styles.star}>
+                <StarOutlined />
+                <span>{item.star_today}</span>
+              </div>
             </div>
-            <div className={styles.branch}>
-              <BranchesOutlined />
-              <span>{item.branch}</span>
-            </div>
-            <div className={styles.star}>
-              <StarOutlined />
-              <span>{item.star_today}</span>
-            </div>
-          </div>
-        </li>
-      ));
-      return (
-        <QueueAnim
-          type={['right', 'left']}
-        >
-          <ul 
-            key={(!dateModal && !languageModal && showAnim) ? 'ul' :undefined}
+          </li>
+        ));
+        return (
+          <QueueAnim
+            type={['right', 'left']}
           >
-            {items}
-          </ul>
-        </QueueAnim>
+            <ul 
+              key={(!dateModal && !languageModal && showAnim) ? 'ul' :undefined}
+            >
+              {items}
+            </ul>
+          </QueueAnim>
+        )
+      }
+      return (
+        <h3 style={{textAlign: 'center'}}>网络异常,请刷新重试</h3>
       )
     }
     return null;

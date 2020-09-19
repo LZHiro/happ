@@ -18,10 +18,14 @@ class GithubService extends Service {
     const { ctx } = this;
     const { logger } = ctx;
     try {
-      const data = fs.readFileSync(path.join(__dirname, '../public/cache/github_trending.json'), {
-        encoding: 'utf8',
-      });
-      return JSON.parse(data);
+      const filepath = path.join(__dirname, '../public/cache/github_trending.json');
+      if (fs.existsSync(filepath)) {
+        const data = fs.readFileSync(filepath, {
+          encoding: 'utf8',
+        });
+        return JSON.parse(data);
+      }
+      return [];
     } catch (err) {
       logger.error(err);
     }

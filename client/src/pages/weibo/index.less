@@ -68,7 +68,15 @@
         vertical-align: middle;
         margin-right: 10px;
       }
-
+      text-overflow: ellipsis;
+      span {
+        max-width: 224px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        display: inline-block;
+        vertical-align: middle;
+      }
       .watched {
         font-size: 12px;
         color: #939393;
@@ -78,6 +86,11 @@
     }
     li + li {
       border-top: 1px solid rgba(162,162,162,.2);
+    }
+  }
+  :global {
+    .am-tabs-pane-wrap {
+      overflow: hidden;
     }
   }
 }

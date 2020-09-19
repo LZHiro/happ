@@ -11,8 +11,8 @@ class AppBootHook {
   async willReady() {
   }
   async didReady() {
-    this.app.runSchedule('clear_trending_cache');
-    this.app.runSchedule('update_github_trending');
+    // this.app.runSchedule('clear_trending_cache');
+    // this.app.runSchedule('update_github_trending');
   }
   async serverDidReady() {
   }
