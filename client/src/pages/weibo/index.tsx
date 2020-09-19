@@ -19,7 +19,7 @@ const Weibo:React.FC<WeiboProps> = (props) => {
   useEffect(() => {
     props.dispatch({
       type: 'weibo/fetch'
-    })
+    });
   }, [])
   const tabs = [{
     title: '热搜榜'
