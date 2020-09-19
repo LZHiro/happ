@@ -2,6 +2,7 @@
 
 const { Controller } = require('egg');
 
+
 class Weibo extends Controller {
   async index() {
     const { ctx } = this;

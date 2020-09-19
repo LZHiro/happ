@@ -1,12 +1,13 @@
 import request from '@/utils/request';
+import apiRoot from '../../config/api';
 
 
 export interface TrendingParams {
   date: 'today' | 'week' | 'month';
   language?: string
 }
-export function fetchTrending(params: TrendingParams) {
-  return request('//hiro.cn:8443/trending');  
+export function fetchTrending() {
+  return request(apiRoot + '/trending');  
 }
 
 export interface LanguageParams {
@@ -14,9 +15,13 @@ export interface LanguageParams {
   language: string;
 }
 export function fetchLanguageTrending(params: LanguageParams) {
-  return request(`//hiro.cn:8443/trending/${encodeURIComponent(params.language)}`, {
+  return request(apiRoot + `/trending/${encodeURIComponent(params.language)}`, {
     params: {
       since: params.since,
     }
   });
+}
+
+export function fetchWeiboIndex() {
+  return request(apiRoot + '/weibo');
 }

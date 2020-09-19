@@ -1,10 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styles from './index.less';
 import { Tabs } from 'antd-mobile';
-import { history } from 'umi';
+import { connect, Dispatch, WeiboStateType, HotItem } from 'umi';
+import { ConnectState } from '@/models/connect';
+import { Modal } from 'antd-mobile';
 
-export default () => {
 
+interface WeiboProps extends WeiboStateType {
+  dispatch: Dispatch;
+}
+
+const mapStateToProps = ({ weibo: { hot }, loading }: ConnectState) => ({
+  loading: loading.effects['weibo/fetch'],
+  hot
+});
+
+const Weibo:React.FC<WeiboProps> = (props) => {
+  useEffect(() => {
+    props.dispatch({
+      type: 'weibo/fetch'
+    });
+  }, [])
   const tabs = [{
     title: '热搜榜'
   }, {
@@ -13,8 +29,30 @@ export default () => {
     title: '同城榜'
   }];
 
-  function toDetail() {
-    history.push('/weibo/123123');
+  function handleItemClick(item: HotItem) {
+    if (item.scheme) {
+      Modal.alert('This action will jump to Weibo.', 'Are you sure?', [
+        { text: 'Cancel', style: 'default', onPress() {} },
+        { text: 'Got it', onPress(){location.assign(item.scheme)} },
+      ]);
+    }
+  }
+
+  function HotList() {
+    const { hot } = props;
+    const items = hot.minute.map(item => (
+      <li onClick={() => handleItemClick(item)} key={item.desc}>
+        <img src={item.pic} />
+        <span>{item.desc}</span>
+        {item.desc_extr && <span className={styles.watched}>{item.desc_extr}</span>}
+        {item.icon && <img src={item.icon} />}
+      </li>
+    ));
+    return (
+      <ul className={styles.list}>
+        {items}   
+      </ul>
+    );
   }
 
   return (
@@ -34,14 +72,7 @@ export default () => {
           >
             <div>
               <p className={styles.tip}>实时热点，每分钟更新一次</p>
-              <ul className={styles.list}>
-                <li>
-                  <img src="//simg.s.weibo.com/20180205110043_img_search_stick%403x.png" />
-                  <span>中国国际服务贸易交易会</span>
-                  <span className={styles.watched}>562114545</span>
-                  <img src="//simg.s.weibo.com/20190429_hot.png" />
-                </li>
-              </ul>
+              <HotList />
             </div>
             <div>
               <p className={styles.tip}>实时热点，每分钟更新一次</p>
@@ -54,3 +85,6 @@ export default () => {
     </div>
   );
 }
+
+
+export default connect(mapStateToProps)(Weibo);

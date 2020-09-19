@@ -1,5 +1,6 @@
 import { GlobalState } from './global';
 import { TrendingStateType } from '@/pages/trending/models/index';
+import { WeiboStateType } from '@/pages/weibo/models/index';
 
 export interface Loading {
   global: boolean;
@@ -9,13 +10,15 @@ export interface Loading {
   models: {
     global?: boolean;
     trending?: boolean;
+    weibo?: boolean;
   }
 }
 
 export interface ConnectState {
   global: GlobalState;
   trending: TrendingStateType;
-  loading: Loading
+  loading: Loading;
+  weibo: WeiboStateType;
 }
 
 export { GlobalState };
