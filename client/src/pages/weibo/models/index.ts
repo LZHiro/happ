@@ -68,8 +68,10 @@ const Model: WeiboModelType = {
               },
             }
           });
+          callback && callback();
         }
       } catch (err) {
+        callback && callback();
         console.error(err);
       }
     }

@@ -15,19 +15,12 @@ const options = {
 
 class GithubService extends Service {
   async trending() {
-    const { ctx } = this;
-    const { logger } = ctx;
-    try {
-      const filepath = path.join(__dirname, '../public/cache/github_trending.json');
-      if (fs.existsSync(filepath)) {
-        const data = fs.readFileSync(filepath, {
-          encoding: 'utf8',
-        });
-        return JSON.parse(data);
-      }
-      return [];
-    } catch (err) {
-      logger.error(err);
+    const filepath = path.join(__dirname, '../public/cache/github_trending.json');
+    if (fs.existsSync(filepath)) {
+      const data = fs.readFileSync(filepath, {
+        encoding: 'utf8',
+      });
+      return JSON.parse(data);
     }
   }
   async language() {
@@ -46,42 +39,38 @@ class GithubService extends Service {
           return 'today';
       }
     }
-    try {
-      const { language } = params;
-      const since = query.since || 'daily';
-      const key = getDate(since);
-      const cachePath = path.join(__dirname, `../public/cache/${language}_trending.json`);
-      let result = {};
-      if (language) {
-        if (fs.existsSync(cachePath)) {
-          const data = fs.readFileSync(cachePath, {
-            encoding: 'utf8',
-          });
-          result = JSON.parse(data);
-          if (result[key].length) {
-            return result;
-          }
-        }
-
-        const { data } = await ctx.curl(`https://github.com/trending/${language}?since=${since}`, options);
-        if (!data.includes('It looks like we don’t have any trending repositories for your choices.')) {
-          const trending = {
-            today: [],
-            week: [],
-            month: [],
-            ...result,
-          };
-          ctx.helper.insertDataFromHtml(data, key, trending);
-          fs.writeFile(cachePath, JSON.stringify(trending), err => {
-            if (!err) {
-              logger.debug(`write ${language}_trending success`);
-            }
-          });
-          return trending;
+    const { language } = params;
+    const since = query.since || 'daily';
+    const key = getDate(since);
+    const cachePath = path.join(__dirname, `../public/cache/${language}_trending.json`);
+    let result = {};
+    if (language) {
+      if (fs.existsSync(cachePath)) {
+        const data = fs.readFileSync(cachePath, {
+          encoding: 'utf8',
+        });
+        result = JSON.parse(data);
+        if (result[key].length) {
+          return result;
         }
       }
-    } catch (err) {
-      logger.error(err);
+
+      const { data } = await ctx.curl(`https://github.com/trending/${language}?since=${since}`, options);
+      if (!data.includes('It looks like we don’t have any trending repositories for your choices.')) {
+        const trending = {
+          today: [],
+          week: [],
+          month: [],
+          ...result,
+        };
+        ctx.helper.insertDataFromHtml(data, key, trending);
+        fs.writeFile(cachePath, JSON.stringify(trending), err => {
+          if (!err) {
+            logger.debug(`write ${language}_trending success`);
+          }
+        });
+        return trending;
+      }
     }
   }
 }
