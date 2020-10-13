@@ -63,13 +63,10 @@ const Trending: React.FC<TrendingProps> = (props) => {
     switch(index) {
       case 0:
         return 'Today';
-      break;
       case 1:
         return 'This week';
-      break;
       case 2:
         return 'This month';
-      break;
       default:
         return 'Today';
     }
@@ -130,7 +127,7 @@ const Trending: React.FC<TrendingProps> = (props) => {
     setLanguages(filterList);
   }, 300)
 
-  function TrendingList() {
+  function renderTrendingList() {
     if(props.loading) {
       return (
         <Loading />
@@ -179,7 +176,7 @@ const Trending: React.FC<TrendingProps> = (props) => {
             type={['right', 'left']}
           >
             <ul 
-              key={(!dateModal && !languageModal && showAnim) ? 'ul' :undefined}
+              // key={(!dateModal && !languageModal && showAnim) ? 'ul' :undefined}
             >
               {items}
             </ul>
@@ -211,7 +208,10 @@ const Trending: React.FC<TrendingProps> = (props) => {
 
   return (
     <div className={styles.trending} onTouchMove={ev => {!touchMove && ev.stopPropagation()}}>
-      <QueueAnim component="header" type={['right', 'left']}>
+      <QueueAnim 
+        component="header" 
+        type={['right', 'left']}
+      >
         <MenuOutlined onClick={() => {setShowAnim(false);setShowPanel(bool => !bool)}} key="menu" className={styles.menu} />
         <div key="title" className={styles.title}>
           <GithubFilled className={styles.github} />
@@ -257,7 +257,7 @@ const Trending: React.FC<TrendingProps> = (props) => {
             Date Range: <span onClick={() => {setDateModal(true);setShowAnim(false)}} className={styles.selection}>{getDate(dateIndex)} </span>
           </div>
         </QueueAnim>
-        <TrendingList key="trendingList" />
+        {renderTrendingList()}
       </div>
       <Modal
         onClose={() => {setLanguageModal(false);setLanguages(languages)}}
