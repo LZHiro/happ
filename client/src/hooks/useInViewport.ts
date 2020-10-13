@@ -1,6 +1,6 @@
 import { useState, useEffect, InvalidEvent } from 'react';
 import 'intersection-observer';
-import { getTargetElement, BasicTaget } from '@/utils/dom';
+import { getTargetElement, BasicTarget } from '@/utils/dom';
 
 type InViewport = boolean | undefined;
 
@@ -19,7 +19,7 @@ function isInViewPort(el: HTMLElement): boolean {
   return false;
 }
 
-function useInViewport(target: BasicTaget):InViewport {
+function useInViewport(target: BasicTarget):InViewport {
   const [ inViewport, setInViewport ] = useState<InViewport>(() => {
     const el = getTargetElement(target);
     return isInViewPort(el as HTMLElement);

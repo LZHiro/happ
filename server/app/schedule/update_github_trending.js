@@ -41,7 +41,11 @@ class UpdateGithubCache extends Subscription {
         helper.insertDataFromHtml(today, 'today', trending);
         helper.insertDataFromHtml(week, 'week', trending);
         helper.insertDataFromHtml(month, 'month', trending);
-
+        try {
+          fs.accessSync(path.join(__dirname, '../public', 'cache'));
+        } catch (err) {
+          fs.mkdirSync(path.join(__dirname, '../public/cache'));
+        }
         fs.writeFile(path.join(__dirname, '../public/cache/github_trending.json'), JSON.stringify(trending), err => {
           if (!err) {
             logger.info('write github_trending success');

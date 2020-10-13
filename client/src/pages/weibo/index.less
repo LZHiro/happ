@@ -1,6 +1,40 @@
 .weibo {
+  height: 100%;
+  overflow: scroll;
+  -webkit-overflow-scrolling: touch;
+  .tabbar {
+    position: relative;
+    z-index: 98;
+    width: 375px;
+  }
+  .placeholder {
+    display: none;
+    height: 43.5px;
+  }
+  .fixed {
+    position: fixed;
+    backface-visibility: hidden;
+    perspective: 1000;
+    top: 0px;
+    border-bottom: 1px solid rgba(162,162,162,.2);
+    :global {
+      .am-tabs-default-bar-tab {
+        &::after {
+          display: none !important;
+        }
+      }
+    }
+  }
+  .observe {
+    position: absolute;
+    height: 0;
+    top: -46px;
+    width: 100%;
+  }
   header{
     text-align: center;
+    backface-visibility: hidden;
+    perspective: 1000;
     position: sticky;
     top: 0;
     left: 0;
@@ -62,6 +96,8 @@
       height: 46px;
       line-height: 46px;
       font-size: 16px;
+      display: flex;
+      align-items: center;
       img {
         width: 24px;
         height: 24px;
@@ -86,18 +122,6 @@
     }
     li + li {
       border-top: 1px solid rgba(162,162,162,.2);
-    }
-  }
-  .fixedBar {
-    :global {
-      .am-tabs-tab-bar-wrap {
-        position: fixed;
-        width: 375px;
-        top: 0;
-        z-index: 99;
-        box-shadow: 1px -5px 10px silver;
-        overflow: hidden;
-      }
     }
   }
 

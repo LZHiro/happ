@@ -3,6 +3,9 @@ import pxToVwPlugin from 'postcss-px-to-viewport';
 import routes from './config/router.config';
 
 export default defineConfig({
+  history: {
+    type: 'hash',
+  },
   nodeModulesTransform: {
     type: 'none',
   },
@@ -22,12 +25,12 @@ export default defineConfig({
       selectorBlackList: [],
       minPixelValue: 1,
       mediaQuery: false,
-    })
+    }),
   ],
   devServer: {
     https: {
       key:'/var/project/happ/server/cert/server.key',
       cert:'/var/project/happ/server/cert/server.crt',
     }
-  }
+  },
 });

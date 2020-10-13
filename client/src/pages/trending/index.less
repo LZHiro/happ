@@ -1,8 +1,10 @@
 .trending {
   background-color: white;
-  min-height: 100%;
   position: relative;
   z-index: 100;
+  overflow: scroll;
+  -webkit-overflow-scrolling: touch;
+  height: 100%;
   header {
     display: flex;
     padding: 15px;
@@ -119,7 +121,10 @@
         span {
           font-weight: 400;
         }
-
+        p {
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
         .info {
           div {
             margin-right: 16px;

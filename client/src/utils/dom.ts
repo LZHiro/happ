@@ -1,6 +1,6 @@
 import { MutableRefObject } from 'react';
 
-export type BasicTaget<T = HTMLElement> = 
+export type BasicTarget<T = HTMLElement> = 
   | (() => T | null)
   | T
   | null
@@ -9,7 +9,7 @@ export type BasicTaget<T = HTMLElement> =
 type TargetElement = HTMLElement | Document | Window;
 
 export function getTargetElement(
-  target?: BasicTaget<TargetElement>,
+  target?: BasicTarget<TargetElement>,
   defaultElement?: TargetElement,
 ): TargetElement | undefined | null {
   if (!target) {

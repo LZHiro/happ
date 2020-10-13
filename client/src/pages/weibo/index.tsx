@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState, useLayoutEffect } from 'react';
 import styles from './index.less';
-import { Tabs } from 'antd-mobile';
-import { connect, Dispatch, WeiboStateType, HotItem, Models } from 'umi';
+import { Tabs, Modal } from 'antd-mobile';
+import { connect, Dispatch, WeiboStateType, HotItem } from 'umi';
 import { ConnectState } from '@/models/connect';
-import { Modal, PullToRefresh } from 'antd-mobile';
 import useInViewport from '@/hooks/useInViewport';
 import QueueAnim from 'rc-queue-anim';
+import { TabBarPropsType } from 'rmc-tabs/lib';
 import classnames from 'classnames';
-import { findDOMNode } from 'react-dom';
+import useScroll from '@/hooks/useScroll';
 
 interface WeiboProps extends WeiboStateType {
   dispatch: Dispatch;
@@ -31,17 +31,12 @@ const tabs = [{
 
 const Weibo:React.FC<WeiboProps> = (props) => {
   const observeRef = useRef<HTMLDivElement | null>(null);
-  const pullRef = useRef<PullToRefresh>(null);
-  const [ pullHeight, setPullHeight ] = useState(document.documentElement.clientHeight);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
   const [ refreshing, setRefreshing ] = useState(false);
   const [ activeTab, setActiveTab ] = useState(0);
+  const [ lastScrollTop, setLastScrollTop ] = useState(0);
   
-
-  useLayoutEffect(() => {
-    const dom = pullRef.current as PullToRefresh;
-    setPullHeight(pullHeight - findDOMNode(dom).offsetHeight);
-  }, [])
-
   useEffect(() => {
     props.dispatch({
       type: 'weibo/fetch'
@@ -50,7 +45,12 @@ const Weibo:React.FC<WeiboProps> = (props) => {
 
 
   const inviewport = useInViewport(observeRef);
+  const headerInviewport = useInViewport(headerRef);
+  const scroll = useScroll(containerRef);
 
+  useEffect(() => {
+    setLastScrollTop(scroll.top);
+  }, [ inviewport ]);
 
   function handleItemClick(item: HotItem) {
     if (item.scheme) {
@@ -59,6 +59,25 @@ const Weibo:React.FC<WeiboProps> = (props) => {
         { text: 'Got it', onPress(){location.assign(item.scheme)} },
       ]);
     }
+  }
+  
+  function renderTabBar(props: TabBarPropsType) {
+    const className = classnames({
+      [`${styles.tabbar}`]: true,
+      [`${styles.fixed}`]: !inviewport,
+    });
+    return (
+      <>
+        <div style={{display: !inviewport ? 'block': 'none'}} className={styles.placeholder}></div>
+        <div style={!inviewport && headerRef.current && headerInviewport ? {
+          top: `${headerRef.current.getBoundingClientRect().top + headerRef.current.clientHeight}px`
+        } : {
+          
+        }} className={className}>
+          <Tabs.DefaultTabBar {...props} />
+        </div>
+      </>
+    )
   }
 
   function handleRefresh() {
@@ -116,61 +135,52 @@ const Weibo:React.FC<WeiboProps> = (props) => {
     setActiveTab(index);
   }
 
-  const categoryClass = classnames({
-    [`${styles.fixedBar}`]: !inviewport,
-  });
-
   return (
-    <div className={styles.weibo}>
-      <PullToRefresh
-        damping={60}
-        ref={pullRef}
+    <div className={styles.weibo} ref={containerRef}>
+      <header
+        key="header"
         style={{
-          height: pullHeight,
+          top: (!inviewport && scroll.top) ? `-${scroll.top - lastScrollTop}px` : 0
         }}
-        direction="down"
-        refreshing={refreshing}
-        onRefresh={handleRefresh}
+        ref={headerRef}
       >
-       {inviewport && (
-         <QueueAnim
-          type={['top', 'bottom']}
-          component="header"
-         >
-            <h3 key="h3">微博热搜</h3>
-         </QueueAnim>
-       )}
-        <QueueAnim
-          type={['right', 'left']}
-        >
-          <div key="banner" className={styles.banner}>
-            <img src="//simg.s.weibo.com/20181226161247_750_350.png"/>
-          </div>
-        </QueueAnim>
-        <div className={categoryClass}>
-          <div ref={observeRef}></div>
-          <Tabs 
-            tabs={tabs}
-            page={activeTab}
-            swipeable={false}
-            animated={false}
-            onTabClick={handleTabClick}
-          >
-            <div>
-              <p className={styles.tip}>实时热点，每分钟更新一次</p>
-              {renderHotList()}
-              <p className={styles.tip}>实时上升热点</p>
-              {renderTrendingList()}
-            </div>
-            <div>
-              <p className={styles.tip}>实时热点，每分钟更新一次</p>
-            </div>
-            <div>
-              <p className={styles.tip}>实时热点，每分钟更新一次</p>
-            </div>
-          </Tabs>
+       <QueueAnim
+        type={['bottom', 'top']}
+       >
+        <h3 key="h3">微博热搜</h3>
+       </QueueAnim>
+      </header>
+      <QueueAnim
+        type={['right', 'left']}
+      >
+        <div key="banner" className={styles.banner}>
+          <img src="//simg.s.weibo.com/20181226161247_750_350.png"/>
         </div>
-      </PullToRefresh>
+      </QueueAnim>
+      <div style={{position: 'relative'}}>
+        <div className={styles.observe} ref={observeRef}></div>
+        <Tabs 
+          tabs={tabs}
+          page={activeTab}
+          swipeable={false}
+          animated={false}
+          onTabClick={handleTabClick}
+          renderTabBar={renderTabBar}
+        >
+          <div>
+            <p className={styles.tip}>实时热点，每分钟更新一次</p>
+            {renderHotList()}
+            <p className={styles.tip}>实时上升热点</p>
+            {renderTrendingList()}
+          </div>
+          <div>
+            <p className={styles.tip}>实时热点，每分钟更新一次</p>
+          </div>
+          <div>
+            <p className={styles.tip}>实时热点，每分钟更新一次</p>
+          </div>
+        </Tabs>
+      </div>
     </div>
   );
 }
