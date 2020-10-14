@@ -76,12 +76,9 @@ async function baseHandlerError(response: ResponseParam) {
         code: 200,
         data: 1,
       };
-      break;
     case 500:
       message.warning(response.message);
       throw new Error(response.message);
-      return null;
-      break;
     default:
       return response;
   }

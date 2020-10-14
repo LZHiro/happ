@@ -5,7 +5,6 @@ import { TabBar, Carousel } from 'antd-mobile';
 import { Route, RouteItem } from '../../config/router.config';
 import { history, connect, Dispatch } from 'umi';
 import { ConnectState, GlobalState } from '@/models/connect';
-// import { Carousel } from 'antd';
 
 interface BasicRoute extends Route,RouteItem {
   routes: Route
@@ -56,15 +55,6 @@ function BasicLayout(props: BasicLayoutProps) {
 
   }, [ location.pathname ]);
 
-  const [ isFade, setFade ] = useState(false);
-  // useEffect(() => {
-  //   if(isFade) {
-  //     const slider = sliderRef.current;
-  //     if (slider) {
-  //       slider.slick.slickGoTo(currentIndex);
-  //     }
-  //   }
-  // },[ isFade ])
 
   function getIndex(path?:string) {
     return routes.findIndex(d => d.path === path);
@@ -141,19 +131,6 @@ function BasicLayout(props: BasicLayoutProps) {
   }
   return (
     <div className={styles.basicLayout}>
-      {/* <Carousel
-        ref={sliderRef}
-        autoplay={false}
-        dots={false}
-        infinite={false}
-        initialSlide={currentIndex}
-        afterChange={pageChange}
-        slidesToScroll={1}
-        slidesToShow={1}
-        speed={isFade ? 0 : 400}
-      >
-        { pagesCache }
-      </Carousel> */}
       <Carousel
         ref={sliderRef}
         autoplay={false}

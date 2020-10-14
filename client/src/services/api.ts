@@ -22,6 +22,14 @@ export function fetchLanguageTrending(params: LanguageParams) {
   });
 }
 
-export function fetchWeiboIndex() {
-  return request(apiRoot + '/weibo');
+export interface FetchWeiboParams {
+  noLoading?: boolean;
 }
+export function fetchWeiboIndex(params: FetchWeiboParams) {
+  return request(apiRoot + '/weibo/index', params);
+}
+
+export function fetchWeiboYaowen(params: FetchWeiboParams) {
+  return request(apiRoot + '/weibo/yaowen', params);
+}
+

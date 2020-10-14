@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import styles from './index.less';
-import { MenuOutlined, GithubFilled, StarOutlined, BranchesOutlined, CheckOutlined } from '@ant-design/icons';
-import { Radio, Input, List, Spin, Form } from 'antd';
+import { MenuOutlined, GithubFilled, StarOutlined, BranchesOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import { Radio, Input, List, Form } from 'antd';
 import { Modal} from 'antd-mobile';
 import { connect, Dispatch, TrendingStateType } from 'umi';
 import { ConnectState } from '@/models/connect';
 import QueueAnim from 'rc-queue-anim';
 import debounce from 'lodash.debounce';
 import Loading from '@/component/loading';
+
 
 const options = [
   { label: 'Repositories', value: 'repositories' },
@@ -39,6 +40,7 @@ const Trending: React.FC<TrendingProps> = (props) => {
   const [ showPanel, setShowPanel ] = useState(false); 
   const [ touchMove, setTouchMove ] = useState(true);
   const searchRef = useRef<Input>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     const { dispatch, data } = props;
@@ -48,6 +50,8 @@ const Trending: React.FC<TrendingProps> = (props) => {
       });
     }
   }, []);
+
+    
 
   const [ languageModal, setLanguageModal ] = useState(false);
   const [ dateModal, setDateModal ] = useState(false);
@@ -76,13 +80,10 @@ const Trending: React.FC<TrendingProps> = (props) => {
     switch(index) {
       case 0:
         return 'daily';
-      break;
       case 1:
         return 'weekly';
-      break;
       case 2:
         return 'monthly';
-      break;
       default:
         return 'daily';
     }
@@ -127,7 +128,7 @@ const Trending: React.FC<TrendingProps> = (props) => {
     setLanguages(filterList);
   }, 300)
 
-  function renderTrendingList() {
+  function TrendingList() {
     if(props.loading) {
       return (
         <Loading />
@@ -176,7 +177,7 @@ const Trending: React.FC<TrendingProps> = (props) => {
             type={['right', 'left']}
           >
             <ul 
-              // key={(!dateModal && !languageModal && showAnim) ? 'ul' :undefined}
+              key={(!dateModal && !languageModal && showAnim) ? 'ul' :undefined}
             >
               {items}
             </ul>
@@ -205,9 +206,22 @@ const Trending: React.FC<TrendingProps> = (props) => {
     ]);
   }
 
+  function handleLanguageSelect(seleted: string) {
+    if (language !== seleted) {
+      languageChange(seleted);
+      setLanguages(languages);
+    }
+  }
+    
+  function handleClearLanguage() {
+    if (language !=='Any') {
+      setLanguage('Any');
+      setLanguageModal(false);
+    }
+  }
 
   return (
-    <div className={styles.trending} onTouchMove={ev => {!touchMove && ev.stopPropagation()}}>
+    <div className={styles.trending} ref={containerRef} onTouchMove={ev => {!touchMove && ev.stopPropagation()}}>
       <QueueAnim 
         component="header" 
         type={['right', 'left']}
@@ -257,7 +271,7 @@ const Trending: React.FC<TrendingProps> = (props) => {
             Date Range: <span onClick={() => {setDateModal(true);setShowAnim(false)}} className={styles.selection}>{getDate(dateIndex)} </span>
           </div>
         </QueueAnim>
-        {renderTrendingList()}
+        <TrendingList />
       </div>
       <Modal
         onClose={() => {setLanguageModal(false);setLanguages(languages)}}
@@ -274,14 +288,20 @@ const Trending: React.FC<TrendingProps> = (props) => {
           header={(
             <Input onChange={(ev) => filterChange(ev.target.value)} placeholder="Filter languages" />
           )}
-          dataSource={languagesList}
-          renderItem={item => (
-            <List.Item className={language === item ? styles.active : undefined} onClick={(ev) => {languageChange(item);setLanguages(languages);}}>
+        >
+          {language !== 'Any' && (
+            <List.Item key="clear" onClick={handleClearLanguage} className={styles.clear}>
+              <CloseOutlined style={{fontSize: 10}}/>
+              Clear Language
+            </List.Item>
+          )}
+          {languagesList.map((item, index) => (
+            <List.Item key={`${item}-${index}`} className={language === item ? styles.active : undefined} onClick={() => handleLanguageSelect(item)}>
               {language === item && (<CheckOutlined />)}
               {item}
             </List.Item>
-          )}
-        />
+          ))}
+        </List>
       </Modal>
       <Modal
         onClose={() => {setDateModal(false)}}
